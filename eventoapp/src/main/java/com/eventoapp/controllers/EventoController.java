@@ -1,13 +1,15 @@
 package com.eventoapp.controllers;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@SpringBootApplication
+@Controller
 public class EventoController {
 
-	@RequestMapping(value="/cadastrarEvento")
+	@RequestMapping("/cadastrarEvento")
 	public String form(){
-		return "evento/formEvento";
+		return "evento/formEvento.html";
 	}
 }
