@@ -19,7 +19,7 @@ public class DataConfiguration {
 		dts.setDriverClassName("com.mysql.cj.jdbc.Driver");
 		dts.setUrl("jdbc:mysql://localhost:3306/eventosapp?useTimezone=true&serverTimezone=UTC");
 		dts.setUsername("root");
-		dts.setPassword("DevFox02");
+		dts.setPassword("00000000");
 		
 		return dts;
 	}
