@@ -1,12 +1,16 @@
 package com.eventoapp.controllers;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.eventoapp.models.Convidado;
 import com.eventoapp.models.Evento;
@@ -29,9 +33,14 @@ public class EventoController {
 	}
 	
 	@RequestMapping(value = "/cadastrarEvento", method=RequestMethod.POST)
-	public String form(Evento evento) {
+	public String form(@Valid Evento evento, BindingResult result, RedirectAttributes attributes) {
 		/*Método responsável por cadastrar um evento*/
+		if(result.hasErrors()) {
+			attributes.addFlashAttribute("mensagem", "Verifique se todos os campos foram preenchidos corretamente!");
+			return "redirect:/cadastrarEvento";
+		}
 		er.save(evento);
+		attributes.addFlashAttribute("mensagem", "Evento cadastrado com sucesso!!!");
 		
 		return "redirect:/cadastrarEvento";
 	}
@@ -52,16 +61,26 @@ public class EventoController {
 		ModelAndView mav = new ModelAndView("evento/detalhesEvento");
 		mav.addObject("evento", evento);
 		
+		Iterable<Convidado> convidados = cr.findByEvento(evento);
+		mav.addObject("convidados", convidados);
+		
 		return mav;
 	}
 	
 	@RequestMapping(value="/{codigo}", method=RequestMethod.POST)
-	public String detalhesEventoPost(@PathVariable("codigo") long codigo, Convidado convidado) {
+	public String detalhesEventoPost(@PathVariable("codigo") long codigo, @Valid Convidado convidado, BindingResult result, RedirectAttributes attributes) {
 		/*Método responsavel por cadastrar um novo convidado ao evento
-		 * Esse método relaciona o evento ao convidado*/
+		 * Esse método relaciona o evento ao convidado
+		 * Verifica se o usuário preencheu todos os campo*/
+		if(result.hasErrors()) {
+			attributes.addFlashAttribute("mensagem", "Verifique se os campos estão preenchidos corretamente!");
+			return "redirect:/{codigo}";
+		}
+		
 		Evento evento = er.findByCodigo(codigo);
 		convidado.setEvento(evento);
 		cr.save(convidado);
+		attributes.addFlashAttribute("mensagem", "Convidado cadastrado com sucesso!!!");
 		
 		return "redirect:/{codigo}";
 	}
